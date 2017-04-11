@@ -3,11 +3,11 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var logger = require("morgan");
+var methodOverride = require("method-override")
+var path = require("path")
 
-//requiring models
-var Article = require("./models/Article.js")
-var Comment = require("./models/Comment.js")
 
+var articleController = require("./controllers/article_controller.js");
 
 
 var request = require("request");
@@ -16,81 +16,36 @@ mongoose.Promise = Promise;
 var app = express();
 
 app.use(logger("dev"));
-app. use(bodyParser.urlencoded({
-	extended: false
-}));
+ 
 
-app.use(express.static("public"));
+ app.use(express.static(process.cwd() + "/public"));
+ app.use(bodyParser.urlencoded({ extended: false }));
+ app.use(methodOverride("_method"));
+
+
+ var exphbs = require("express-handlebars");
+
+ app.engine("handlebars", exphbs({ defaultLayout: "main"}));
+ 
+ app.set("view engine", "handlebars");
+
+ app.use('/', articleController);
 
 mongoose.connect("mongodb://heroku_8s39hndv:dhmvn2d1sv1qq00s31jqtts9vq@ds159180.mlab.com:59180/heroku_8s39hndv");
 var db = mongoose.connection;
 
 db.on("error", function(error) {
-	console.log("Mongoose Erro: ", erorr);
+	console.log("Mongoose Error: ", erorr);
 });
 
 db.once("open", function(){
 	console.log("Mongoose connection sucessful.");
 });
 
-app.get("/scrape", function(req, res) {
 
-	request("http://www.climbing.com/", function(error, response, html) {
-		var $ = cheerio.load(html);
 
-		$("article h2").each(function(i, element) {
-			var result = {};
 
-			result.title = $(this).children("a").text();
-			result.link = $(this).children("a").attr("href");
-
-			var entry = new Article(result);
-
-			entry.save(function(err, doc) {
-
-				if (err){
-					console.log(err);
-				}
-				else{
-					console.log(doc);
-				}
-			});
-		});
-	});
-	res.send("Scrape Complete");
-});
-app.get("/articles", function(req, res){
-	Article.find({}, function(error, doc) {
-		if (error){
-			console.log(error);
-		}
-		else {
-			res.json(doc);
-		}
-	});
-});
-
-app.post("/articles/:id", function(req, res) {
-	var newComment = new Comment(req.body);
-
-	newComment.save(function(error, doc) {
-		if (error) {
-			console.log(error);
-		}
-		else {
-			Article.findOneAndUpdate({ "_id": req.params.id }, { "comment": doc._id})
-
-			.exec(function(err, doc) {
-				if (err) {
-					console.log(err);
-				}
-				else {
-					res.send(doc);
-				}
-			});
-		}
-	});
-});
+var PORT = proncess.env.PORT || 3000;
 
 
 app.listen(3000, function(){

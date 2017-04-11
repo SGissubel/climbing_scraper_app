@@ -6,9 +6,7 @@ var logger = require("morgan");
 var methodOverride = require("method-override")
 var path = require("path")
 
-
 var articleController = require("./controllers/article_controller.js");
-
 
 var request = require("request");
 var cheerio = require("cheerio");
@@ -19,7 +17,8 @@ app.use(logger("dev"));
  
 
  app.use(express.static(process.cwd() + "/public"));
- app.use(bodyParser.urlencoded({ extended: false }));
+ app.use(bodyParser.urlencoded({ extended: true }));
+ app.use(bodyParser.json());
  app.use(methodOverride("_method"));
 
 
@@ -32,6 +31,7 @@ app.use(logger("dev"));
  app.use('/', articleController);
 
 mongoose.connect("mongodb://heroku_8s39hndv:dhmvn2d1sv1qq00s31jqtts9vq@ds159180.mlab.com:59180/heroku_8s39hndv");
+
 var db = mongoose.connection;
 
 db.on("error", function(error) {
@@ -45,11 +45,11 @@ db.once("open", function(){
 
 
 
-var PORT = proncess.env.PORT || 3000;
+var PORT = process.env.PORT || 3001;
 
 
-app.listen(3000, function(){
-	console.log("App Running on Port 3000");
+app.listen(PORT, function(){
+	console.log("App Running on Port " + PORT);
 	});
 
 

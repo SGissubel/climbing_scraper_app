@@ -1,10 +1,12 @@
 var express = require("express");
 var router = express.Router();
+var request = require("request");
+var cheerio = require("cheerio");
 var Article = require("./../models/Article.js");
 var Comment = require("./../models/Comment.js");
 
 
-router.get("/scrape", function(req, res) {
+router.get("/", function(req, res) {
 
 	request("http://www.climbing.com/", function(error, response, html) {
 		var $ = cheerio.load(html);
@@ -26,7 +28,10 @@ router.get("/scrape", function(req, res) {
 					console.log(doc);
 				}
 			});
-		});
+		});	
+		// res.send(response);
+		res.json(html);
+
 	});
 	res.send("Scrape Complete");
 });
@@ -62,3 +67,5 @@ router.post("/articles/:id", function(req, res) {
 		}
 	});
 });
+
+module.exports = router;

@@ -11,7 +11,7 @@ router.get("/", function(req, res) {
 	request("http://www.climbing.com/", function(error, response, html) {
 		var $ = cheerio.load(html);
 
-		$("article h2").each(function(i, element) {
+		$("div.m-list-card--text-panel h2").each(function(i, element) {
 			var result = {};
 
 			result.title = $(this).children("a").text();
@@ -27,10 +27,11 @@ router.get("/", function(req, res) {
 				else{
 					console.log(doc);
 				}
-			});
+
+			});console.log(result);
 		});	
 		// res.send(response);
-		res.json(html);
+		// res.render(html);
 
 	});
 	res.send("Scrape Complete");

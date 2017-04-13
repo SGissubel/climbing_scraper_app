@@ -1,10 +1,19 @@
 <h1>Hello, universe</h1>
 <div id="article"></div>
+
 {{#each Article}}
-{{#each article}}  
+	<u>{{this.title}}</u>
+	<u>{{this.link}}</u>
+{{/each}}
+
+{{#each articles}}
+	<u>{{this.title}}</u>
+	<u>{{this.link}}</u>  
+	<u>{{this.doc}}</u>  
+{{/each}} 
+
 <!--I don't know which will work yet...or if either will work at all...-->
 <div id="comments"></div>
 
 
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="../../public/app.js"></script>
+

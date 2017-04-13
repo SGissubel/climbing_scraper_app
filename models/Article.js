@@ -1,7 +1,11 @@
 'use strict';
 
+// var express = require("express");
+// var router = express.Router();
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+var articleController = require("../controllers/article_controller.js");
+
 
 var ArticleSchema = new Schema({
 	title: {

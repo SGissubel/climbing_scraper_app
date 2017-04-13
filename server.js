@@ -35,7 +35,7 @@ mongoose.connect("mongodb://heroku_8s39hndv:dhmvn2d1sv1qq00s31jqtts9vq@ds159180.
 var db = mongoose.connection;
 
 db.on("error", function(error) {
-	console.log("Mongoose Error: ", erorr);
+	console.log("Mongoose Error: ", error);
 });
 
 db.once("open", function(){

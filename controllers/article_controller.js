@@ -5,19 +5,32 @@ var cheerio = require("cheerio");
 var Article = require("./../models/Article.js");
 var Comment = require("./../models/Comment.js");
 
+router.get("/", function(req, res){
+	// Article.findOne
+	res.render('index');
+});
 
-router.get("/", function(req, res) {
+router.get("/scrape", function(req, res) {
 
-	request("http://www.climbing.com/", function(error, response, html) {
+	request("http://gripped.com/", function(error, response, html) {
 		var $ = cheerio.load(html);
 
-		$("div.m-list-card--text-panel h2").each(function(i, element) {
+
+		//make an array here
+		var arr = [];
+
+		$("h3 a").each(function(i, element) {
 			var result = {};
+			var a = $(this);
 
-			result.title = $(this).children("a").text();
-			result.link = $(this).children("a").attr("href");
+			result.title = a.text().trim();
 
-			var entry = new Article(result);
+			result.link = a.attr('href');
+
+			//you would push result into the array above
+			arr.push(result); 
+
+			var entry = new Article(arr);
 
 			entry.save(function(err, doc) {
 
@@ -28,21 +41,25 @@ router.get("/", function(req, res) {
 					console.log(doc);
 				}
 
-			});console.log(result);
+			});
 		});	
-		// res.send(response);
+		
+		//res.json the array you made above
+		res.json(arr);
+		// res.redirect('index');
 		// res.render(html);
 
 	});
-	res.send("Scrape Complete");
+	//res.send("Scrape Complete");
 });
 router.get("/articles", function(req, res){
-	Article.find({}, function(error, doc) {
+	var query = Article.find({}); 
+		query.exec(function(error, doc) {
 		if (error){
 			console.log(error);
 		}
 		else {
-			res.json(doc);
+			res.json({Article: doc});
 		}
 	});
 });

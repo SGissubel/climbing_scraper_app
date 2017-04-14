@@ -1,19 +1,20 @@
 <h1>Hello, universe</h1>
 <div id="article"></div>
 
-{{#each Article}}
-	<u>{{this.title}}</u>
-	<u>{{this.link}}</u>
-{{/each}}
 
-{{#each articles}}
-	<u>{{this.title}}</u>
-	<u>{{this.link}}</u>  
-	<u>{{this.doc}}</u>  
-{{/each}} 
+<div class="xs-col-6 title-link">
+	{{#each articles}}
+		<p><h4 data-id="{{this._id}}">{{this.title}}</h4></p>
+		<u><a href="{{this.link}}">{{this.link}}</a></u>  
+		<br><br>
+	{{/each}} 
+</div>
+<div id="comments" class="xs-col-6 title-link">
 
-<!--I don't know which will work yet...or if either will work at all...-->
-<div id="comments"></div>
+</div>
+
+
+
 
 
 

@@ -5,10 +5,19 @@ var cheerio = require("cheerio");
 var Article = require("./../models/Article.js");
 var Comment = require("./../models/Comment.js");
 
+// router.get("/", function(req, res){
+// 	// Article.findOne
+// 	res.render('index');
+// });
+
 router.get("/", function(req, res){
-	// Article.findOne
-	res.render('index');
-});
+	Article.find({
+  }).then(function(article){
+    res.render('index', {
+      articles: article
+    })
+  })
+ });
 
 router.get("/scrape", function(req, res) {
 
@@ -23,25 +32,34 @@ router.get("/scrape", function(req, res) {
 			var result = {};
 			var a = $(this);
 
-			result.title = a.text().trim();
+			result['title'] = a.text().trim();
 
-			result.link = a.attr('href');
+			result['link'] = a.attr('href');
 
 			//you would push result into the array above
 			arr.push(result); 
 
-			var entry = new Article(arr);
+			var entry = new Article(result);
+			
+			Article.collection.insert(entry, onInsert);
 
-			entry.save(function(err, doc) {
+			function onInsert(err, docs) {
+			    if (err) {
+			        // TODO: handle error
+			    } else {
+			        console.info('%d potatoes were successfully stored.', docs.length);
+			    }
+			}
+			// entry.save(function(err, doc) {
 
-				if (err){
-					console.log(err);
-				}
-				else{
-					console.log(doc);
-				}
+			// 	if (err){
+			// 		console.log(err);
+			// 	}
+			// 	else{
+			// 		console.log(doc);
+			// 	}
 
-			});
+			// });
 		});	
 		
 		//res.json the array you made above
@@ -53,18 +71,38 @@ router.get("/scrape", function(req, res) {
 	//res.send("Scrape Complete");
 });
 router.get("/articles", function(req, res){
-	var query = Article.find({}); 
-		query.exec(function(error, doc) {
+
+	Article.find({}, function(error, doc) {
 		if (error){
 			console.log(error);
 		}
 		else {
-			res.json({Article: doc});
+			res.json(doc);
 		}
 	});
 });
 
+// Grab an article by it's ObjectId
+router.get("/articles/:id", function(req, res) {
+  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  Article.findOne({ "_id": req.params.id })
+  // ..and populate all of the notes associated with it
+  .populate("comment")
+  // now, execute our query
+  .exec(function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Otherwise, send the doc to the browser as a json object
+    else {
+      res.json(doc);
+    }
+  });
+});
+
 router.post("/articles/:id", function(req, res) {
+	
 	var newComment = new Comment(req.body);
 
 	newComment.save(function(error, doc) {

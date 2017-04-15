@@ -106,6 +106,7 @@ router.post("/articles/:id", function(req, res) {
 	var newComment = new Comment(req.body);
 
 	newComment.save(function(error, doc) {
+		console.log(doc);
 		if (error) {
 			console.log(error);
 		}
